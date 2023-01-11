@@ -1,6 +1,6 @@
 const express = require("express");
 const morgan = require("morgan");
-const mongoose = require("mongoose");
+const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
@@ -11,6 +11,7 @@ const fsExtra = require("fs-extra");
 
 // Middlewares
 app.use(express.json());
+app.use(cors());
 app.use(express.static("./images"));
 app.use(morgan("dev"));
 
@@ -54,7 +55,12 @@ app
       console.log(req.file);
       const product = await Product.create({
         ...req.body,
-        image: req.file.filename,
+        ...(req.file
+          ? {
+              image: process.env.URL + req.file.filename,
+              imageName: req.file.filename,
+            }
+          : {}),
       });
       res.status(200).json({
         status: "succes",
@@ -86,7 +92,9 @@ app
       const id = req.params.id;
 
       const product = await Product.findByIdAndDelete(id);
-      product?.image && fs.unlink(`./images/${product.image}`, (err) => {});
+      console.log(product);
+      product?.imageName &&
+        fs.unlink(`./images/${product.imageName}`, (err) => {});
 
       res.status(200).json({
         status: "succes",
@@ -101,10 +109,16 @@ app
       const id = req.params.id;
       const product = await Product.findByIdAndUpdate(id, {
         ...req.body,
-        image: req.file.filename,
+        ...(req.file
+          ? {
+              image: process.env.URL + req.file.filename,
+              imageName: req.file.filename,
+            }
+          : {}),
       });
-
-      product.image && fs.unlink(`./images/${product.image}`, (err) => {});
+      req.file &&
+        product.image &&
+        fs.unlink(`./images/${product.imageName}`, (err) => {});
 
       res.status(200).json({
         status: "succes",

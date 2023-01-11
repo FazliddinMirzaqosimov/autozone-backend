@@ -20,6 +20,9 @@ const productSchema = new mongoose.Schema({
   image: {
     type: String,
   },
+  imageName: {
+    type: String,
+  },
   description: {
     type: String,
   },
@@ -28,15 +31,18 @@ const productSchema = new mongoose.Schema({
   },
   rating: {
     type: Number,
-    default: 1,
+    min: 0,
+    max: 5,
   },
   capacity: {
+    type: Number,
+  },
+  unity: {
     type: String,
   },
   created: {
     type: Date,
     default: Date.now(),
-    select: false,
   },
 });
 
