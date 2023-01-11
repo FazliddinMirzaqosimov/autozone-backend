@@ -51,8 +51,6 @@ app
   })
   .post(upload.single("image"), async (req, res) => {
     try {
-      console.log(req.body);
-      console.log(req.file);
       const product = await Product.create({
         ...req.body,
         ...(req.file

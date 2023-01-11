@@ -19,6 +19,7 @@ const productSchema = new mongoose.Schema({
   },
   image: {
     type: String,
+    required: [true, "Car isn't defined"],
   },
   imageName: {
     type: String,
