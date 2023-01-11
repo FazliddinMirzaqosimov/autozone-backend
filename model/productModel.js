@@ -18,9 +18,10 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: [true, "Car isn't defined"],
     },
+
     image: {
       type: String,
-      required: [true, "Car isn't defined"],
+      required: [true, "Image isn't defined"],
     },
     imageName: {
       type: String,
