@@ -8,6 +8,7 @@ const ApiFeatures = require("./utils/apiFeatures");
 const Product = require("./model/productModel");
 const app = express();
 const fsExtra = require("fs-extra");
+const { Filter } = require("./model/filterModels");
 
 // Middlewares
 app.use(express.json());
@@ -28,6 +29,7 @@ const upload = multer({ storage });
 
 //Controllers
 
+// PRODUCTS
 app
   .route("/api/v1/products")
   .get(async (req, res) => {
@@ -60,12 +62,14 @@ app
             }
           : {}),
       });
-      res.status(200).json({
+      res.status(201).json({
         status: "succes",
         data: { product },
       });
       // res.status(200).send("post");
     } catch (error) {
+      console.log(1, error, req.file);
+      req.file && fs.unlink(`./images/${req.file.filename}`);
       res.status(404).json({ status: "fail", message: error.message });
     }
   })
@@ -73,10 +77,12 @@ app
     try {
       fsExtra.emptyDir("./images");
       const products = await Product.remove();
+      // const filters = await Filter.remove();
 
       res.status(200).json({
         status: "succes",
-        ...products,
+        products,
+        // filters,
       });
     } catch (error) {
       res.status(404).json({ status: "fail", message: error.message });
@@ -118,7 +124,7 @@ app
         product.image &&
         fs.unlink(`./images/${product.imageName}`, (err) => {});
 
-      res.status(200).json({
+      res.status(201).json({
         status: "succes",
         data: { product },
       });
@@ -134,6 +140,62 @@ app
         status: "succes",
         data: { product },
       });
+    } catch (error) {
+      res.status(404).json({ status: "fail", message: error.message });
+    }
+  });
+
+//FILTERS
+app
+  .route("/api/v1/filters")
+  .post(async (req, res) => {
+    console.log(req.body);
+    try {
+      const newFilter = await Filter.create(req.body);
+      res.status(201).json({ status: "succes", data: { newFilter } });
+    } catch (error) {
+      res.status(404).json({ status: "fail", message: error.message });
+    }
+  })
+  .get(async (req, res) => {
+    try {
+      const filters = await Filter.find();
+      res
+        .status(200)
+        .json({ status: "succes", result: filters.length, data: { filters } });
+    } catch (error) {
+      res.status(404).json({ status: "fail", message: error.message });
+    }
+  })
+  .delete(async (req, res) => {
+    try {
+      const filters = await Filter.remove();
+
+      res.status(200).json({
+        status: "succes",
+        filters,
+      });
+    } catch (error) {
+      res.status(404).json({ status: "fail", message: error.message });
+    }
+  });
+
+app
+  .route("/api/v1/filter/:id")
+  .patch(async (req, res) => {
+    try {
+      const { id } = req.params;
+      const oldFilter = await Filter.findByIdAndUpdate(id, req.body);
+      res.status(200).json({ status: "succes", data: { oldFilter } });
+    } catch (error) {
+      res.status(404).json({ status: "fail", message: error.message });
+    }
+  })
+  .get(async (req, res) => {
+    try {
+      const { id } = req.params;
+      const filter = await Filter.findById(id);
+      res.status(200).json({ status: "succes", data: { filter } });
     } catch (error) {
       res.status(404).json({ status: "fail", message: error.message });
     }

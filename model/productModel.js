@@ -18,10 +18,13 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: [true, "Car isn't defined"],
     },
-
+    // shtrix: {
+    //   type: String,
+    //   unique: true,
+    // },
     image: {
       type: String,
-      required: [true, "Image isn't defined"],
+      // required: [true, "Image isn't defined"],
     },
     imageName: {
       type: String,
