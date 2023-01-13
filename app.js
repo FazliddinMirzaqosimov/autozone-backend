@@ -35,9 +35,9 @@ app
   .get(async (req, res) => {
     try {
       const productQuery = new ApiFeatures(Product.find(), req.query)
+        .sort()
         .filter()
         .paginate()
-        .sort()
         .limitFields();
 
       const products = await productQuery.query;
@@ -159,7 +159,12 @@ app
   })
   .get(async (req, res) => {
     try {
-      const filters = await Filter.find();
+      const filterQuery = new ApiFeatures(Filter.find(), req.query)
+        .sort()
+        .filter()
+        .paginate()
+        .limitFields();
+      const filters = await filterQuery.query;
       res
         .status(200)
         .json({ status: "succes", result: filters.length, data: { filters } });
