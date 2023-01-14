@@ -68,7 +68,6 @@ app
       });
       // res.status(200).send("post");
     } catch (error) {
-      console.log(1, error, req.file);
       req.file && fs.unlink(`./images/${req.file.filename}`);
       res.status(404).json({ status: "fail", message: error.message });
     }
@@ -96,7 +95,6 @@ app
       const id = req.params.id;
 
       const product = await Product.findByIdAndDelete(id);
-      console.log(product);
       product?.imageName &&
         fs.unlink(`./images/${product.imageName}`, (err) => {});
 
@@ -149,7 +147,6 @@ app
 app
   .route("/api/v1/filters")
   .post(async (req, res) => {
-    console.log(req.body);
     try {
       const newFilter = await Filter.create(req.body);
       res.status(201).json({ status: "succes", data: { newFilter } });
@@ -191,6 +188,15 @@ app
     try {
       const { id } = req.params;
       const oldFilter = await Filter.findByIdAndUpdate(id, req.body);
+      res.status(200).json({ status: "succes", data: { oldFilter } });
+    } catch (error) {
+      res.status(404).json({ status: "fail", message: error.message });
+    }
+  })
+  .delete(async (req, res) => {
+    try {
+      const { id } = req.params;
+      const oldFilter = await Filter.findByIdAndDelete(id);
       res.status(200).json({ status: "succes", data: { oldFilter } });
     } catch (error) {
       res.status(404).json({ status: "fail", message: error.message });
